@@ -1,19 +1,23 @@
 const express = require("express");
 const { getEndpoints } = require("./controllers/api.controller");
-const {getUsers} = require("./controllers/users.controller")
+const { getUsers } = require("./controllers/users.controller");
 const {
   handleCustomErrors,
   handle500errors,
 } = require("./controllers/errors.controller");
 
+const cors = require("cors");
+
 const app = express();
 app.use(express.json());
+
+app.use(cors());
 
 // Routing
 app.get("/", getEndpoints);
 app.get("/api", getEndpoints);
 
-app.get("/users", getUsers)
+app.get("/users", getUsers);
 
 // Error-handling
 app.use(handleCustomErrors);
