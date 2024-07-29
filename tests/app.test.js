@@ -3,7 +3,7 @@ const request = require("supertest");
 const endpoints = require("../endpoints.json");
 
 describe("/api", () => {
-  test("Should send an object with all available endpoints (GET 200).", () => {
+  it("should send an object with all available endpoints.", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -11,7 +11,7 @@ describe("/api", () => {
         expect(typeof body).toBe("object");
       });
   });
-  test("Should check that all available endpoints are included.", () => {
+  it("should check that all available endpoints are included.", () => {
     return request(app)
       .get("/api")
       .expect(200)
