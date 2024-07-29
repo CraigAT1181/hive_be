@@ -1,5 +1,8 @@
 {
   "GET / || /api": {
     "description": "serves up a json representation of all the available endpoints of the api"
+  },
+  "GET /users": {
+    "description": "returns an array of user objects from supabase"
   }
 }
