@@ -16,7 +16,7 @@ exports.addUser = async (req, res, next) => {
 
     // Create user with authentication
     const authData = await createUser(email, password);
-    
+
     // Check if authData contains user property
     if (!authData.user) {
       return res.status(400).json({ error: 'User creation failed' });
@@ -25,18 +25,18 @@ exports.addUser = async (req, res, next) => {
     const authUserId = authData.user.id;
 
     const userDetails = {
-        id: authUserId,
-        full_name,
-        handle,
-        email,
-        telephone,
-        profile_pic,
-        birthday,
-        bio,
-        country,
-        city,
-        county
-      };
+      id: authUserId,
+      full_name,
+      handle,
+      email,
+      telephone,
+      profile_pic,
+      birthday,
+      bio,
+      country,
+      city,
+      county
+    };
 
     const user = await insertUserDetails(userDetails);
 

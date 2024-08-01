@@ -13,7 +13,6 @@ exports.fetchUsers = async () => {
   return data;
 };
 
-// Function to create a new user
 exports.createUser = async (email, password) => {
   try {
     const { data, error } = await supabase.auth.signUp({
@@ -56,30 +55,31 @@ exports.insertUserDetails = async (userDetails) => {
     county,
   } = userDetails;
 
-  const { data, error } = await supabase.from("users").insert([
-    {
-      id,
-      full_name,
-      handle,
-      email,
-      telephone,
-      profile_pic,
-      birthday,
-      bio,
-      country,
-      city,
-      county,
-    },
-  ]);
+  const { data, error } = await supabase
+    .from("users")
+    .insert([
+      {
+        id,
+        full_name,
+        handle,
+        email,
+        telephone,
+        profile_pic,
+        birthday,
+        bio,
+        country,
+        city,
+        county,
+      },
+    ])
+    .select("*"); // Ensure we get the inserted row back
 
   if (error) {
     console.error("Error inserting user details:", error);
     throw error;
   }
 
-  // Fetch the newly created user details
-  console.log(data, "Inserted");
-  return data;
+  return data[0]; // Return the inserted user details
 };
 
 // Function to fetch user details by ID
