@@ -32,7 +32,7 @@ exports.createUser = async (email, password) => {
       throw new Error("User creation failed");
     }
 
-    return data; // Return the user ID
+    return data;
   } catch (error) {
     console.error("Error in createUser:", error);
     throw error;
@@ -42,7 +42,7 @@ exports.createUser = async (email, password) => {
 // Function to insert user details into the database
 exports.insertUserDetails = async (userDetails) => {
   const {
-    id,
+    auth_user_id,
     full_name,
     handle,
     email,
@@ -59,7 +59,7 @@ exports.insertUserDetails = async (userDetails) => {
     .from("users")
     .insert([
       {
-        id,
+        auth_user_id,
         full_name,
         handle,
         email,

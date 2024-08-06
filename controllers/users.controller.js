@@ -13,7 +13,6 @@ exports.getUsers = async (req, res, next) => {
 exports.addUser = async (req, res, next) => {
   try {
     const { email, password, full_name, handle, telephone, profile_pic, birthday, bio, country, city, county } = req.body;
-
     // Create user with authentication
     const authData = await createUser(email, password);
 
@@ -25,7 +24,7 @@ exports.addUser = async (req, res, next) => {
     const authUserId = authData.user.id;
 
     const userDetails = {
-      id: authUserId,
+      auth_user_id: authUserId,
       full_name,
       handle,
       email,
