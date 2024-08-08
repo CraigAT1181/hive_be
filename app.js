@@ -20,7 +20,8 @@ app.get("/", getEndpoints);
 app.get("/api", getEndpoints);
 app.get("/users", getUsers);
 app.post("/users", addUser);
-app.post("/users/login", loginUser)
+app.post("/users/login", loginUser);
+app.get("/users/authenticate", authenticateUser);
 app.post("/admin/users", authenticateUser, checkAdmin, createAdminUser);
 app.delete("/users/:id", authenticateUser, checkAdmin, deleteUser);
 
