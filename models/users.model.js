@@ -25,7 +25,7 @@ exports.createUser = async (email, password) => {
       throw error;
     }
 
-    console.log("Auth Response:", data); // Log the response data
+    console.log("Auth Response:", data);
 
     if (!data.user) {
       console.error("Auth Response does not contain user data");
@@ -39,7 +39,6 @@ exports.createUser = async (email, password) => {
   }
 };
 
-// Function to insert user details into the database
 exports.insertUserDetails = async (userDetails) => {
   const {
     auth_user_id,
@@ -72,23 +71,41 @@ exports.insertUserDetails = async (userDetails) => {
         county,
       },
     ])
-    .select("*"); // Ensure we get the inserted row back
+    .select("*");
 
   if (error) {
     console.error("Error inserting user details:", error);
     throw error;
   }
 
-  return data[0]; // Return the inserted user details
+  return data[0];
 };
 
-// Function to fetch user details by ID
+exports.signInUser = async (email, password) => {
+  try {
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email,
+      password: password,
+    });
+
+    if (error) {
+      console.error("Error signing in:", error);
+      throw error;
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error in signInUser", error);
+    throw error;
+  }
+};
+
 exports.getUserById = async (userId) => {
   const { data, error } = await supabase
     .from("users")
     .select("*")
     .eq("id", userId)
-    .single(); // Use .single() to get a single object instead of an array
+    .single();
 
   if (error) {
     console.error("Error fetching user:", error);
