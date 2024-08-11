@@ -100,16 +100,23 @@ exports.signInUser = async (email, password) => {
   }
 };
 
-exports.getUserById = async (userId) => {
+exports.getUserById = async (user_id) => {
+
+  const trimmedID = user_id.trim();
   const { data, error } = await supabase
     .from("users")
     .select("*")
-    .eq("id", userId)
+    .eq("auth_user_id", trimmedID)
     .single();
 
   if (error) {
     console.error("Error fetching user:", error);
     throw error;
+  }
+
+  if (!data) {
+    console.error("No user found with the provided auth_user_id.");
+    throw new Error("No user found with the provided auth_user_id.");
   }
 
   return data;

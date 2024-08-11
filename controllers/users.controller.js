@@ -1,4 +1,4 @@
-const { fetchUsers } = require("../models/users.model");
+const { fetchUsers, getUserById } = require("../models/users.model");
 const {
   createUser,
   insertUserDetails,
@@ -70,12 +70,20 @@ exports.loginUser = async (req, res, next) => {
     }
 
     const authData = await signInUser(email, password);
-
+    
     if (!authData.user) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
 
-    res.status(200).json(authData);
+    const user_id = authData.user.id;
+
+    const user_info = await getUserById(user_id);
+
+    if (!user_info) {
+      return res.status(401).json({ error: "Failed to obtain user info." });
+    }
+
+    res.status(200).json({ authData: authData, user: user_info });
   } catch (err) {
     next(err);
   }
