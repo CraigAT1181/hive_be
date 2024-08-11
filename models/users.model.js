@@ -121,3 +121,13 @@ exports.getUserById = async (user_id) => {
 
   return data;
 };
+
+exports.deleteUserById = async (userId) => {
+  const { error } = await supabase.auth.admin.deleteUser(userId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return { message: 'User deleted successfully' };
+}

@@ -1,8 +1,10 @@
-const { fetchUsers, getUserById } = require("../models/users.model");
 const {
+  fetchUsers,
+  getUserById,
   createUser,
   insertUserDetails,
   signInUser,
+  deleteUserById,
 } = require("../models/users.model");
 
 exports.getUsers = async (req, res, next) => {
@@ -70,7 +72,7 @@ exports.loginUser = async (req, res, next) => {
     }
 
     const authData = await signInUser(email, password);
-    
+
     if (!authData.user) {
       return res.status(401).json({ error: "Invalid email or password." });
     }
@@ -86,5 +88,17 @@ exports.loginUser = async (req, res, next) => {
     res.status(200).json({ authData: authData, user: user_info });
   } catch (err) {
     next(err);
+  }
+};
+
+exports.deleteUser = async (req, res, next) => {
+  const userId = req.params.id;
+
+  try {
+    const result = await deleteUserById(userId);
+    res.status(200).json(result);
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(400).json({ error: error.message });
   }
 };
