@@ -1,9 +1,8 @@
 const express = require("express");
-const { createAdminUser, deleteUser } = require("./controllers/admin.controller")
 const { getEndpoints } = require("./controllers/api.controller");
-const { getUsers, addUser, loginUser } = require("./controllers/users.controller");
-const { authenticateUser } = require('./middleware/authenticateUser');
-const { checkAdmin } = require('./middleware/checkAdmin');
+const { getUsers, addUser, loginUser, deleteUser } = require("./controllers/users.controller");
+// const { authenticateUser } = require('./middleware/authenticateUser');
+// const { checkAdmin } = require('./middleware/checkAdmin');
 const {
   handleCustomErrors,
   handle500errors,
@@ -21,9 +20,9 @@ app.get("/api", getEndpoints);
 app.get("/users", getUsers);
 app.post("/users", addUser);
 app.post("/users/login", loginUser);
-app.get("/users/authenticate", authenticateUser);
-app.post("/admin/users", authenticateUser, checkAdmin, createAdminUser);
-app.delete("/users/:id", authenticateUser, checkAdmin, deleteUser);
+// app.get("/users/authenticate", authenticateUser);
+// app.post("/admin/users", authenticateUser, checkAdmin, createAdminUser);
+app.delete("/users/:id", deleteUser);
 
 // Error-handling
 app.use(handleCustomErrors);
