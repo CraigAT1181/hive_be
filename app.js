@@ -1,6 +1,6 @@
 const express = require("express");
 const { getEndpoints } = require("./controllers/api.controller");
-const { getUsers, addUser, loginUser, deleteUser } = require("./controllers/users.controller");
+const { getUsers, addUser, loginUser, deleteUser, getUserInfo, logout } = require("./controllers/users.controller");
 // const { authenticateUser } = require('./middleware/authenticateUser');
 // const { checkAdmin } = require('./middleware/checkAdmin');
 const {
@@ -20,7 +20,8 @@ app.get("/api", getEndpoints);
 app.get("/users", getUsers);
 app.post("/users", addUser);
 app.post("/users/login", loginUser);
-// app.get("/users/authenticate", authenticateUser);
+app.get("/users/authenticate", getUserInfo);
+app.post("/users/logout", logout)
 // app.post("/admin/users", authenticateUser, checkAdmin, createAdminUser);
 app.delete("/users/:id", deleteUser);
 

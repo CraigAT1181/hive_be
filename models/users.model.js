@@ -100,6 +100,22 @@ exports.signInUser = async (email, password) => {
   }
 };
 
+exports.authenticateUser = async (token) => {
+
+  try {
+    const { data: { user }, error } = await supabase.auth.getUser(token);
+
+    if (error || !user) {
+      throw new Error('Invalid token');
+    }
+
+    return user;
+    
+  } catch (error) {
+    throw error;
+  }
+};
+
 exports.getUserById = async (user_id) => {
 
   const trimmedID = user_id.trim();
@@ -121,6 +137,21 @@ exports.getUserById = async (user_id) => {
 
   return data;
 };
+
+exports.logUserOut = async () => {
+  try {
+    const { error } = await supabase.auth.signOut();
+
+    if (error) {
+      throw new Error('Error during sign out');
+    }
+
+    return {"message": "Signed out successfully."};
+  } catch (error) {
+    console.error("Error signing out", error);
+    next(error);
+  }
+}
 
 exports.deleteUserById = async (userId) => {
   const { error } = await supabase.auth.admin.deleteUser(userId);

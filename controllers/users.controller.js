@@ -5,14 +5,16 @@ const {
   insertUserDetails,
   signInUser,
   deleteUserById,
+  authenticateUser,
+  logUserOut,
 } = require("../models/users.model");
 
 exports.getUsers = async (req, res, next) => {
   try {
     const users = await fetchUsers();
     res.status(200).send({ users });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
@@ -58,38 +60,58 @@ exports.addUser = async (req, res, next) => {
     const user = await insertUserDetails(userDetails);
 
     res.status(201).json({ user });
-  } catch (err) {
-    next(err);
+  } catch (error) {
+    next(error);
   }
 };
 
 exports.loginUser = async (req, res, next) => {
+  const { email, password } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: "Email and password required." });
+  }
+
   try {
-    const { email, password } = req.body;
+  
+    const {session, user} = await signInUser(email, password);
 
-    if (!email || !password) {
-      return res.status(400).json({ error: "Email and password required." });
+    if (!session) {
+      return res.status(401).json({ message: 'Authentication failed' });
     }
 
-    const authData = await signInUser(email, password);
+    const user_info = await getUserById(user.id);
 
-    if (!authData.user) {
-      return res.status(401).json({ error: "Invalid email or password." });
-    }
 
-    const user_id = authData.user.id;
-
-    const user_info = await getUserById(user_id);
-
-    if (!user_info) {
-      return res.status(401).json({ error: "Failed to obtain user info." });
-    }
-
-    res.status(200).json({ authData: authData, user: user_info });
-  } catch (err) {
-    next(err);
+    res.status(200).json({ session: session, user: user_info });
+  } catch (error) {
+    next(error);
   }
 };
+
+exports.getUserInfo = async (req, res, next) => {
+  const token = req.headers.authorization.split(' ')[1];
+
+  try {
+    const authenticated_user = await authenticateUser(token);
+
+    const user_info = await getUserById(authenticated_user.id);
+
+    res.status(200).json({ user: user_info });
+  } catch (error) {
+    next(error)
+  }
+};
+
+exports.logout = async (req, res, next) => {
+  
+  try {
+    const result = await logUserOut();
+ 
+    res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+}
 
 exports.deleteUser = async (req, res, next) => {
   const userId = req.params.id;
@@ -98,7 +120,6 @@ exports.deleteUser = async (req, res, next) => {
     const result = await deleteUserById(userId);
     res.status(200).json(result);
   } catch (error) {
-    console.error("Error deleting user:", error);
-    res.status(400).json({ error: error.message });
+    next(error);
   }
 };
