@@ -114,10 +114,10 @@ exports.logout = async (req, res, next) => {
 }
 
 exports.deleteUser = async (req, res, next) => {
-  const userId = req.params.id;
+  const user_id = req.params.user_id;
 
   try {
-    const result = await deleteUserById(userId);
+    const result = await deleteUserById(user_id);
     res.status(200).json(result);
   } catch (error) {
     next(error);

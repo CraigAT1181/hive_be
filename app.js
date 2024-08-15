@@ -22,8 +22,8 @@ app.post("/users", addUser);
 app.post("/users/login", loginUser);
 app.get("/users/authenticate", getUserInfo);
 app.post("/users/logout", logout)
+app.delete("/users/:user_id", deleteUser);
 // app.post("/admin/users", authenticateUser, checkAdmin, createAdminUser);
-app.delete("/users/:id", deleteUser);
 
 // Error-handling
 app.use(handleCustomErrors);
