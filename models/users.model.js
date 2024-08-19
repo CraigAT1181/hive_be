@@ -1,3 +1,4 @@
+const path = require('path');
 const supabase = require("../config/supabase");
 
 exports.fetchUsers = async () => {
@@ -39,6 +40,43 @@ exports.createUser = async (email, password) => {
   }
 };
 
+exports.uploadProfilePicture = async (authUserId, file) => {
+  const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+  const fileExtension = path.extname(file.originalname).toLowerCase();
+
+  if (!allowedExtensions.includes(fileExtension)) {
+    throw new Error('Invalid file type');
+  }
+
+  try {
+    const fileName = `${authUserId}/${Date.now()}_${file.originalname}`;
+
+    const { data, error } = await supabase.storage
+    .from('profile-pictures')
+    .upload(fileName, file.buffer, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.mimetype,
+    });
+
+    if (error) {
+      console.error("Error uploading profile picture:", error);
+      throw error;
+    }
+
+    const { data: publicUrlData } = supabase
+      .storage
+      .from('profile-pictures')
+      .getPublicUrl(fileName);
+
+    return publicUrlData.publicUrl;
+
+  } catch (erorr) {
+    console.error("Error in uploadProfilePicture:", error);
+    throw error;
+  }
+}
+
 exports.insertUserDetails = async (userDetails) => {
   const {
     auth_user_id,
@@ -53,6 +91,12 @@ exports.insertUserDetails = async (userDetails) => {
     city,
     county,
   } = userDetails;
+
+  if (!handle.startsWith('@')) {
+    handle = `@${handle}`;
+  }
+
+  handle = handle.toLowerCase();
 
   const { data, error } = await supabase
     .from("users")
@@ -74,6 +118,15 @@ exports.insertUserDetails = async (userDetails) => {
     .select("*");
 
   if (error) {
+
+    if (error.code === "23505") {
+      if (error.message.includes("email")) {
+        throw new Error("Email already exists");
+      } else if (error.message.includes("handle")) {
+        throw new Error("Handle already exists");
+      }
+    }
+
     console.error("Error inserting user details:", error);
     throw error;
   }

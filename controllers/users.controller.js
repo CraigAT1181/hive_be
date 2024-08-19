@@ -2,6 +2,7 @@ const {
   fetchUsers,
   getUserById,
   createUser,
+  uploadProfilePicture,
   insertUserDetails,
   signInUser,
   deleteUserById,
@@ -26,22 +27,27 @@ exports.addUser = async (req, res, next) => {
       full_name,
       handle,
       telephone,
-      profile_pic,
       birthday,
       bio,
       country,
       city,
       county,
     } = req.body;
-    // Create user with authentication
+    
+    const file = req.file;
+
     const authData = await createUser(email, password);
 
-    // Check if authData contains user property
     if (!authData.user) {
       return res.status(400).json({ error: "User creation failed" });
     }
 
     const authUserId = authData.user.id;
+
+    let profilePicUrl = null;
+    if (file) {
+      profilePicUrl = await uploadProfilePicture(authUserId, file);
+    }
 
     const userDetails = {
       auth_user_id: authUserId,
@@ -49,7 +55,7 @@ exports.addUser = async (req, res, next) => {
       handle,
       email,
       telephone,
-      profile_pic,
+      profile_pic: profilePicUrl,
       birthday,
       bio,
       country,

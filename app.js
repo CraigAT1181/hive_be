@@ -1,4 +1,5 @@
 const express = require("express");
+const multer = require('multer');
 const { getEndpoints } = require("./controllers/api.controller");
 const { getUsers, addUser, loginUser, deleteUser, getUserInfo, logout } = require("./controllers/users.controller");
 // const { authenticateUser } = require('./middleware/authenticateUser');
@@ -10,6 +11,9 @@ const {
 
 const cors = require("cors");
 
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -18,7 +22,7 @@ app.use(cors());
 app.get("/", getEndpoints);
 app.get("/api", getEndpoints);
 app.get("/users", getUsers);
-app.post("/users", addUser);
+app.post("/users", upload.single('profile-pic'), addUser);
 app.post("/users/login", loginUser);
 app.get("/users/authenticate", getUserInfo);
 app.post("/users/logout", logout)
