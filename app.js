@@ -1,5 +1,7 @@
 const express = require("express");
 const multer = require('multer');
+const path = require('path');
+
 const { getEndpoints } = require("./controllers/api.controller");
 const { getUsers, addUser, loginUser, deleteUser, getUserInfo, logout } = require("./controllers/users.controller");
 // const { authenticateUser } = require('./middleware/authenticateUser');
@@ -12,7 +14,18 @@ const {
 const cors = require("cors");
 
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage });
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit to 5MB
+  fileFilter: (req, file, cb) => {
+    const allowedExtensions = ['.png', '.jpg', '.jpeg'];
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    if (!allowedExtensions.includes(fileExtension)) {
+      return cb(new Error('Invalid file type'), false);
+    }
+    cb(null, true);
+  }
+});
 
 const app = express();
 app.use(express.json());

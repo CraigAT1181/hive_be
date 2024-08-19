@@ -1,4 +1,3 @@
-const path = require('path');
 const supabase = require("../config/supabase");
 
 exports.fetchUsers = async () => {
@@ -41,13 +40,6 @@ exports.createUser = async (email, password) => {
 };
 
 exports.uploadProfilePicture = async (authUserId, file) => {
-  const allowedExtensions = ['.png', '.jpg', '.jpeg'];
-  const fileExtension = path.extname(file.originalname).toLowerCase();
-
-  if (!allowedExtensions.includes(fileExtension)) {
-    throw new Error('Invalid file type');
-  }
-
   try {
     const fileName = `${authUserId}/${Date.now()}_${file.originalname}`;
 
@@ -71,7 +63,7 @@ exports.uploadProfilePicture = async (authUserId, file) => {
 
     return publicUrlData.publicUrl;
 
-  } catch (erorr) {
+  } catch (error) {
     console.error("Error in uploadProfilePicture:", error);
     throw error;
   }
@@ -92,11 +84,13 @@ exports.insertUserDetails = async (userDetails) => {
     county,
   } = userDetails;
 
-  if (!handle.startsWith('@')) {
-    handle = `@${handle}`;
+let modifiedHandle = handle;
+
+  if (!modifiedHandle.startsWith('@')) {
+    modifiedHandle = `@${modifiedHandle}`;
   }
 
-  handle = handle.toLowerCase();
+  modifiedHandle = modifiedHandle.toLowerCase();
 
   const { data, error } = await supabase
     .from("users")
@@ -104,7 +98,7 @@ exports.insertUserDetails = async (userDetails) => {
       {
         auth_user_id,
         full_name,
-        handle,
+        handle: modifiedHandle,
         email,
         telephone,
         profile_pic,
