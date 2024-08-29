@@ -4,14 +4,15 @@ const path = require('path');
 
 const { getEndpoints } = require("./controllers/api.controller");
 const { getUsers, addUser, loginUser, deleteUser, getUserInfo, logout } = require("./controllers/users.controller");
-// const { authenticateUser } = require('./middleware/authenticateUser');
-// const { checkAdmin } = require('./middleware/checkAdmin');
+const { getPosts } = require("./controllers/posts.controller");
+
 const {
   handleCustomErrors,
   handle500errors,
 } = require("./controllers/errors.controller");
 
 const cors = require("cors");
+
 
 const storage = multer.memoryStorage();
 const upload = multer({
@@ -40,7 +41,8 @@ app.post("/users/login", loginUser);
 app.get("/users/authenticate", getUserInfo);
 app.post("/users/logout", logout)
 app.delete("/users/:user_id", deleteUser);
-// app.post("/admin/users", authenticateUser, checkAdmin, createAdminUser);
+
+app.get("/posts", getPosts)
 
 // Error-handling
 app.use(handleCustomErrors);
