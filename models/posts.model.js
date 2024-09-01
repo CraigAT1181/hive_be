@@ -31,3 +31,29 @@ exports.fetchPosts = async () => {
 
   return data;
 };
+
+exports.fetchPostWithParent = async (postId) => {
+    const { data: post, error: postError } = await supabase
+    .from('posts')
+    .select('*, parentPost:parent_id(*)')
+    .eq('id', postId)
+    .single();
+
+    if (postError) throw postError;
+
+    console.log(post);
+    return post;
+}
+
+exports.fetchReplies = async (postId) => {
+    const { data: replies, error: repliesError } = await supabase
+    .from('posts')
+    .select('*')
+    .eq('parent_id', postId)
+    .order('created_at', { ascending: true });
+
+if (repliesError) throw repliesError;
+
+console.log(replies);
+return replies;
+}
