@@ -13,6 +13,7 @@ exports.fetchPosts = async () => {
       retweets_count,
       page,
       region,
+      reply_count,
       users (
         profile_pic,
         full_name,
@@ -35,7 +36,46 @@ exports.fetchPosts = async () => {
 exports.fetchPostWithParent = async (postId) => {
     const { data: post, error: postError } = await supabase
     .from('posts')
-    .select('*, parentPost:parent_id(*)')
+    .select(`
+        id,
+        content,
+        created_at,
+        updated_at,
+        is_reply,
+        likes_count,
+        retweets_count,
+        page,
+        region,
+        reply_count,
+        users (
+            profile_pic,
+            full_name,
+            handle
+        ),
+        media (
+            media_url
+        ),
+        parentPost:parent_id (
+            id,
+            content,
+            created_at,
+            updated_at,
+            is_reply,
+            likes_count,
+            retweets_count,
+            page,
+            region,
+            reply_count,
+            users (
+                profile_pic,
+                full_name,
+                handle
+            ),
+            media (
+                media_url
+            )
+        )
+    `)
     .eq('id', postId)
     .single();
 
@@ -45,15 +85,35 @@ exports.fetchPostWithParent = async (postId) => {
     return post;
 }
 
+
 exports.fetchReplies = async (postId) => {
     const { data: replies, error: repliesError } = await supabase
     .from('posts')
-    .select('*')
+    .select(`
+        id,
+        content,
+        created_at,
+        updated_at,
+        is_reply,
+        likes_count,
+        retweets_count,
+        page,
+        region,
+        reply_count,
+        users (
+            profile_pic,
+            full_name,
+            handle
+        ),
+        media (
+            media_url
+        )
+    `)
     .eq('parent_id', postId)
     .order('created_at', { ascending: true });
 
-if (repliesError) throw repliesError;
+    if (repliesError) throw repliesError;
 
-console.log(replies);
-return replies;
+    console.log(replies);
+    return replies;
 }
