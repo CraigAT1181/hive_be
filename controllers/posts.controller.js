@@ -1,4 +1,4 @@
-const { fetchPosts, fetchPostWithParent, fetchReplies } = require("../models/posts.model");
+const { fetchPosts, fetchPostWithParent, fetchReplies, postNewPost, uploadPostMedia } = require("../models/posts.model");
 
 exports.getPosts = async (req, res, next) => {
   try {
@@ -27,4 +27,37 @@ const replies = await fetchReplies(postId);
     } catch (error) {
         next(error);
     }
+}
+
+exports.addPost = async (req, res, next) => {
+  try {
+    const {
+      user_id,
+      parent_id,
+      content,
+      is_reply,
+      page,
+      region,
+    } = req.body;
+
+    const postDetails = {user_id, parent_id, content, is_reply, page, region};
+    
+    const files = req.file;
+
+    const newPost = await postNewPost(postDetails);
+
+    const post_id = newPost.post_id;
+
+    let mediaURLs = [];
+
+    if (files) {
+      mediaURLs = await uploadPostMedia(post_id, files)
+    }
+
+
+    res.status(200).json({post, mediaURLs})
+
+  } catch (error) {
+    next(error);
+  }
 }

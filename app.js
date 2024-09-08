@@ -4,7 +4,7 @@ const path = require('path');
 
 const { getEndpoints } = require("./controllers/api.controller");
 const { getUsers, addUser, loginUser, deleteUser, getUserInfo, logout } = require("./controllers/users.controller");
-const { getPosts, getSinglePost } = require("./controllers/posts.controller");
+const { getPosts, getSinglePost, addPost } = require("./controllers/posts.controller");
 
 const {
   handleCustomErrors,
@@ -39,11 +39,12 @@ app.get("/users", getUsers);
 app.post("/users", upload.single('profile-pic'), addUser);
 app.post("/users/login", loginUser);
 app.get("/users/authenticate", getUserInfo);
-app.post("/users/logout", logout)
+app.post("/users/logout", logout);
 app.delete("/users/:user_id", deleteUser);
 
-app.get("/posts", getPosts)
-app.get("/posts/:postId", getSinglePost)
+app.get("/posts", getPosts);
+app.get("/posts/:postId", getSinglePost);
+app.post("/posts", addPost);
 
 // Error-handling
 app.use(handleCustomErrors);
