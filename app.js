@@ -44,7 +44,7 @@ app.delete("/users/:user_id", deleteUser);
 
 app.get("/posts", getPosts);
 app.get("/posts/:postId", getSinglePost);
-app.post("/posts", addPost);
+app.post("/posts", upload.array('media-files'), addPost);
 
 // Error-handling
 app.use(handleCustomErrors);

@@ -7,12 +7,12 @@ describe("GET /posts", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("posts");
-    expect(response.body.posts).toHaveLength(3);
+    expect(response.body.posts).toHaveLength(4);
   });
 
   it("should return correct post structures", async () => {
     const response = await request(app).get("/posts");
-  
+
     response.body.posts.forEach((post) => {
       expect(post).toHaveProperty("parent_id");
       expect(post).toHaveProperty("content");
@@ -23,8 +23,10 @@ describe("GET /posts", () => {
       expect(post).toHaveProperty("retweets_count");
       expect(post).toHaveProperty("page");
       expect(post).toHaveProperty("region");
-  
-      expect(typeof post.parent_id === "string" || post.parent_id === null).toBe(true);
+
+      expect(
+        typeof post.parent_id === "string" || post.parent_id === null
+      ).toBe(true);
       expect(typeof post.content).toBe("string");
       expect(new Date(post.created_at).toString()).not.toBe("Invalid Date");
       expect(new Date(post.updated_at).toString()).not.toBe("Invalid Date");
@@ -35,5 +37,4 @@ describe("GET /posts", () => {
       expect(typeof post.region).toBe("string");
     });
   });
-  
 });
