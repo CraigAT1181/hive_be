@@ -1,155 +1,156 @@
 const supabase = require("../config/supabase");
 
-exports.fetchPosts = async () => {
-  const { data, error } = await supabase
-    .from("posts")
-    .select(
+exports.fetchPosts = async (room) => {
+  try {
+    const { data, error } = await supabase
+      .from("posts")
+      .select(
+        `
+        id,
+        content,
+        created_at,
+        updated_at,
+        parent_id,
+        is_reply,
+        likes_count,
+        retweets_count,
+        room,
+        region,
+        reply_count,
+        users (
+          profile_pic,
+          full_name,
+          handle
+        ),
+        media (
+          media_url
+        )
       `
-      id,
-      content,
-      created_at,
-      updated_at,
-      parent_id,
-      is_reply,
-      likes_count,
-      retweets_count,
-      page,
-      region,
-      reply_count,
-      users (
-        profile_pic,
-        full_name,
-        handle
-      ),
-      media (
-        media_url
       )
-    `
-    )
+      .eq("room", room)
+      .order("created_at", { ascending: false });
 
-    .order("created_at", { ascending: false });
+    if (error) throw error;
 
-  if (error) {
+    return data;
+  } catch (error) {
+    console.error("Error fetching posts:", error);
     throw error;
   }
-
-  return data;
 };
 
 exports.fetchPostWithParent = async (postId) => {
-  const { data: post, error: postError } = await supabase
-    .from("posts")
-    .select(
-      `
-        id,
-        content,
-        created_at,
-        updated_at,
-        parent_id,
-        is_reply,
-        likes_count,
-        retweets_count,
-        page,
-        region,
-        reply_count,
-        users (
-            profile_pic,
-            full_name,
-            handle
-        ),
-        media (
-            media_url
-        ),
-        parentPost:parent_id (
-            id,
-            content,
-            created_at,
-            updated_at,
-            is_reply,
-            likes_count,
-            retweets_count,
-            page,
-            region,
-            reply_count,
-            users (
-                profile_pic,
-                full_name,
-                handle
-            ),
-            media (
-                media_url
-            )
-        )
-    `
-    )
-    .eq("id", postId)
-    .single();
+  console.log("postId received in model:", postId);
+  
+  try {
+    // Fetch the post details, including the parent_id
+    const { data: post, error: postError } = await supabase
+      .from("posts")
+      .select(
+        `
+          id,
+          content,
+          created_at,
+          updated_at,
+          parent_id,
+          is_reply,
+          likes_count,
+          retweets_count,
+          room,
+          region,
+          reply_count,
+          users (
+              profile_pic,
+              full_name,
+              handle
+          ),
+          media (
+              media_url
+          )
+        `
+      )
+      .eq("id", postId)
+      .single();
 
-  if (postError) throw postError;
+    if (postError) throw postError;
 
-  console.log(post);
-  return post;
+    console.log("Model - returned from fetchPostWithParent", post);
+    return { post };
+  } catch (error) {
+    console.error("Error fetching post with parent:", error);
+    throw error;
+  }
 };
 
 exports.fetchReplies = async (postId) => {
-  const { data: replies, error: repliesError } = await supabase
-    .from("posts")
-    .select(
+  try {
+    const { data: replies, error: repliesError } = await supabase
+      .from("posts")
+      .select(
+        `
+          id,
+          content,
+          created_at,
+          updated_at,
+          parent_id,
+          is_reply,
+          likes_count,
+          retweets_count,
+          room,
+          region,
+          reply_count,
+          users (
+              profile_pic,
+              full_name,
+              handle
+          ),
+          media (
+              media_url
+          )
       `
-        id,
-        content,
-        created_at,
-        updated_at,
-        parent_id,
-        is_reply,
-        likes_count,
-        retweets_count,
-        page,
-        region,
-        reply_count,
-        users (
-            profile_pic,
-            full_name,
-            handle
-        ),
-        media (
-            media_url
-        )
-    `
-    )
-    .eq("parent_id", postId)
-    .order("created_at", { ascending: true });
+      )
+      .eq("parent_id", postId)
+      .order("created_at", { ascending: true });
 
-  if (repliesError) throw repliesError;
+    if (repliesError) throw repliesError;
 
-  console.log(replies);
-  return replies;
+    console.log("Model - returned from fetchReplies:", replies);
+    return replies;
+  } catch (error) {
+    console.error("Error fetching replies:", error);
+    throw error;
+  }
 };
 
 exports.postNewPost = async (postDetails) => {
-  const { user_id, parent_id, content, is_reply, page, region } = postDetails;
+  const { user_id, parent_id, content, is_reply, room, region } = postDetails;
 
-  const { data, error } = await supabase
-    .from("posts")
-    .insert([
-      {
-        user_id,
-        parent_id,
-        content,
-        is_reply,
-        page,
-        region,
-      },
-    ])
-    .select("*");
+  try {
+    const { data, error } = await supabase
+      .from("posts")
+      .insert([
+        {
+          user_id,
+          parent_id,
+          content,
+          is_reply,
+          room,
+          region,
+        },
+      ])
+      .select("*");
 
-  if (error) {
-    console.error("Error adding new post:", error);
+    if (error) {
+      console.error("Error adding new post:", error);
+      throw error;
+    }
+
+    
+    return data[0];
+  } catch (error) {
+    console.error("Error in postNewPost:", error);
     throw error;
   }
-  console.log("New Post", data[0]);
-
-  return data[0];
 };
 
 exports.uploadPostMedia = async (post_id, files) => {
@@ -183,7 +184,7 @@ exports.uploadPostMedia = async (post_id, files) => {
 
     return mediaURLs;
   } catch (error) {
-    console.error("Error in uploadProfilePicture:", error);
+    console.error("Error in uploadPostMedia:", error);
     throw error;
   }
 };
@@ -194,8 +195,7 @@ exports.savePostMedia = async (post_id, mediaURLs) => {
       post_id,
       media_url: url,
     }));
-    console.log("Post ID:", post_id);
-    console.log("Media URLs:", mediaURLs);
+    
 
     const { data, error } = await supabase
       .from("media")

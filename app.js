@@ -42,7 +42,7 @@ app.get("/users/authenticate", getUserInfo);
 app.post("/users/logout", logout);
 app.delete("/users/:user_id", deleteUser);
 
-app.get("/posts", getPosts);
+app.get("/posts/:room", getPosts);
 app.get("/posts/:postId", getSinglePost);
 app.post("/posts", upload.array('media-files'), addPost);
 

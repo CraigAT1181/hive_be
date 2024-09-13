@@ -21,7 +21,7 @@ describe("GET /posts", () => {
       expect(post).toHaveProperty("is_reply");
       expect(post).toHaveProperty("likes_count");
       expect(post).toHaveProperty("retweets_count");
-      expect(post).toHaveProperty("page");
+      expect(post).toHaveProperty("room");
       expect(post).toHaveProperty("region");
 
       expect(
@@ -33,7 +33,7 @@ describe("GET /posts", () => {
       expect(typeof post.is_reply).toBe("boolean");
       expect(typeof post.likes_count).toBe("number");
       expect(typeof post.retweets_count).toBe("number");
-      expect(typeof post.page).toBe("string");
+      expect(typeof post.room).toBe("string");
       expect(typeof post.region).toBe("string");
     });
   });
