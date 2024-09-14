@@ -43,7 +43,7 @@ app.post("/users/logout", logout);
 app.delete("/users/:user_id", deleteUser);
 
 app.get("/posts/:room", getPosts);
-app.get("/posts/:postId", getSinglePost);
+app.get("/post/:postId", getSinglePost);
 app.post("/posts", upload.array('media-files'), addPost);
 
 // Error-handling

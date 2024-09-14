@@ -41,7 +41,7 @@ exports.fetchPosts = async (room) => {
 
 exports.fetchPostWithParent = async (postId) => {
   console.log("postId received in model:", postId);
-  
+
   try {
     // Fetch the post details, including the parent_id
     const { data: post, error: postError } = await supabase
@@ -74,13 +74,52 @@ exports.fetchPostWithParent = async (postId) => {
 
     if (postError) throw postError;
 
+    // If the post has a parent_id, fetch the parent post, otherwise set parentPost to null
+    let parentPost = null;
+    if (post.parent_id) {
+      const { data: parent, error: parentError } = await supabase
+        .from("posts")
+        .select(
+          `
+            id,
+            content,
+            created_at,
+            updated_at,
+            parent_id,
+            is_reply,
+            likes_count,
+            retweets_count,
+            room,
+            region,
+            reply_count,
+            users (
+                profile_pic,
+                full_name,
+                handle
+            ),
+            media (
+                media_url
+            )
+          `
+        )
+        .eq("id", post.parent_id)
+        .single();
+
+      if (parentError) {
+        console.error("Error fetching parent post:", parentError);
+        throw parentError;
+      }
+      parentPost = parent;
+    }
+
     console.log("Model - returned from fetchPostWithParent", post);
-    return { post };
+    return { post, parentPost };
   } catch (error) {
     console.error("Error fetching post with parent:", error);
     throw error;
   }
 };
+
 
 exports.fetchReplies = async (postId) => {
   try {
