@@ -3,7 +3,7 @@ const app = require("../app");
 
 describe("GET /posts", () => {
   it("should return a list of posts", async () => {
-    const response = await request(app).get("/posts");
+    const response = await request(app).get("/posts/Nation%20Live");
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("posts");
@@ -11,7 +11,7 @@ describe("GET /posts", () => {
   });
 
   it("should return correct post structures", async () => {
-    const response = await request(app).get("/posts");
+    const response = await request(app).get("/posts/Nation%20Live");
 
     response.body.posts.forEach((post) => {
       expect(post).toHaveProperty("parent_id");
